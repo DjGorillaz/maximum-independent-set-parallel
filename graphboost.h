@@ -13,11 +13,11 @@ class GraphMatrix;
 
 class GraphBoost
 {
-    int vNumber;            //количество вершин
-    vector<int> vSetCount;  //количество вершин в каждом множестве
-    int t;                  //Время выполнения
-    Graph graph;            //Граф
-    Map map;                //Ассоциативный массив, где ключ = вершина
+    int vNumber;            //Number of vertices
+    vector<int> vSetCount;  //Number of vertices in each set
+    int t;                  //Execution time
+    Graph graph;            //Graph
+    Map map;                //key = vertex
 
 public:
     GraphBoost(int N);

@@ -14,13 +14,14 @@ GraphMatrix::GraphMatrix(int N): vNumber(N), t(0), proc(0)
         graph[i] = new bool[vNumber];
     }
 
-    //Генерируем граф
+    //Generate graph
     srand(time(NULL));
     for(int i = 0; i < vNumber; ++i)
     {
         for(int j = i+1; j < vNumber; ++j)
         {
-            if(rand() % 10 < 6) //60%
+            //Graph connectivity = 60%
+            if(rand() % 10 < 6)
             {
                 graph[i][j] = true;
                 graph[j][i] = true;
@@ -39,7 +40,7 @@ void GraphMatrix::printGraph()
             if (graph[i][j])
             {
                 if (prevI != i) cout << endl;
-                cout << "(" << i << "," << j << ") "; //выводит рёбра
+                cout << "(" << i << "," << j << ") "; //print edges
                 prevI = i;
             }
         }
@@ -51,12 +52,12 @@ void GraphMatrix::run(int pr)
 {
     proc = pr;
     if (vNumber < proc) proc = vNumber;
-    maxSizes = new int[proc]; //Максимальный размер независимого множества для каждого процессора
-    setNumbers = new unsigned long long[proc]; //номер независимого множества
+    maxSizes = new int[proc]; //Maximum size of maximal independent set for each processor
+    setNumbers = new unsigned long long[proc]; //Number of set
     fill_n(maxSizes, proc, 0);
     fill_n(setNumbers, proc, 0);
 
-    //Все возможные подмножества вершин
+    //All possible subsets of vertices
     unsigned long long numberOfSets = pow(2, vNumber);
 
     t = GetTickCount();
@@ -65,7 +66,7 @@ void GraphMatrix::run(int pr)
     unsigned long long perProc = numberOfSets/proc;
     unsigned long long l = 0;
     unsigned long long r = perProc;
-    //Распараллеливание задачи
+    //Parallelization of task
     for (int i = 0; i < proc; ++i)
     {
         bool* vector = new bool[vNumber];
@@ -79,10 +80,10 @@ void GraphMatrix::run(int pr)
 
 void GraphMatrix::findMaxIndependentSet(bool* vector, unsigned long long l, unsigned long long r, unsigned long long* setNumber, int* maxSize)
 {
-    //Рассматриваем все возможные подмножества (2^n)
+    //Look through all subsets (2^n)
     for (unsigned long long i = l; i < r; ++i)
     {
-        //Получаем вектор вершин для текущего подмножества
+        //Get vector of vertices for current subset
         unsigned long long value = i;
         for (int j = 0; j < vNumber; ++j) {
             vector[j] = (value >> j) & 1;
@@ -90,20 +91,20 @@ void GraphMatrix::findMaxIndependentSet(bool* vector, unsigned long long l, unsi
 
         bool isInSet = true;
         int currSize = 0;
-        //Попарно проверяем вершины из вектора
+        //Check vertices from vector pairwise
         for(int k = 0; k < vNumber; ++k)
         {
-            //Если вершина есть в векторе
+            //If vertex is in vector
             if (vector[k] == true)
             {
                 for(int l = k+1; l < vNumber; ++l)
                 {
                     if (vector[l] == true)
                     {
-                        //Если ребро присутствует в матрице
+                        //If edge is in matrix
                         if (graph[k][l] == true)
                         {
-                            //Множество не является независимым
+                            //Set is not independent
                             isInSet = false;
                             currSize = 0;
                             break;
@@ -114,7 +115,7 @@ void GraphMatrix::findMaxIndependentSet(bool* vector, unsigned long long l, unsi
                 else break;
             }
         }
-        //Сравниваем размер текущего множества с максимальными
+        //Compare current set's size with maximal
         if (currSize > *maxSize)
         {
             *maxSize = currSize;
@@ -127,7 +128,7 @@ void GraphMatrix::printResult()
 {
     int maxSize = 0;
     long long setNumber = 0;
-    //Поиск максимального
+    //Find maximal set
     for (int i = 0; i < proc; ++i) //N
     {
         if (maxSizes[i] > maxSize)
@@ -139,7 +140,7 @@ void GraphMatrix::printResult()
 
     t = GetTickCount() - t;
 
-    //Вывод результата
+    //Print result
     cout << "Brute force algorithm" << endl;
     cout << "Time: " << t << " ms" << endl;
     cout << "Set number: " << setNumber << endl;
@@ -150,7 +151,7 @@ void GraphMatrix::printResult()
         vector[j] = (setNumber >> j) & 1;
     }
 
-    //Вывод максимального независимого подмножества
+    //Print maximal independent set
     cout << "Result: ( ";
     for(int k = 0; k < vNumber; ++k)
     {

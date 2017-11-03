@@ -9,16 +9,16 @@ int main()
     int N;
     cin >> N;
 
-    //Количество процессоров
+    //Number of processors
     int processorCount = 4;
 
-    //Полный перебор
+    //Brute force
     GraphMatrix bruteForce(N);
     bruteForce.printGraph();
     bruteForce.run(processorCount);
     bruteForce.printResult();
 
-    //Жадный алгоритм на том же графе
+    //Greedy, the same graph
     GraphBoost greedy(bruteForce);
     //greedy.printGraph();
     greedy.run(processorCount);

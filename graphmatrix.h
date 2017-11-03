@@ -5,12 +5,12 @@ class GraphBoost;
 
 class GraphMatrix
 {
-    int vNumber;    //Количество вершин
-    bool** graph;   //Граф
-    int t;          //Время выполнения
-    int proc;       //Количество процессоров
-    int* maxSizes;  //Максимальный размер независимого множества для каждого процессора
-    unsigned long long* setNumbers; //Номер множества
+    int vNumber;    //Number of vertices
+    bool** graph;   //Graph
+    int t;          //Execution time
+    int proc;       //Number of processors
+    int* maxSizes;  //Maximum size of maximal independent set for each processor
+    unsigned long long* setNumbers; //Number of set
 
 public:
     GraphMatrix(int N);
