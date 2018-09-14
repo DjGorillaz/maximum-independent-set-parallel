@@ -1,7 +1,10 @@
 #include <iostream>
 
 #include "graphboost.h"
-#include "graphmatrix.h"
+#include "finder_greedy.h"
+#include "finder_brute.h"
+
+namespace MIS = MaximumIndependentSet;
 
 int main()
 {
@@ -10,19 +13,21 @@ int main()
     cin >> N;
 
     //Number of processors
-    int processorCount = 4;
+    int p = 4;
 
-    //Brute force
-    GraphMatrix bruteForce(N);
-    bruteForce.printGraph();
-    bruteForce.run(processorCount);
-    bruteForce.printResult();
+    MIS::Graph gm(N, 0.6);
+    gm.print();
+    
+    MIS::FinderGreedy fg(gm, p);
+    fg.run();
+    std::cout << fg.get_time() << " ms\n";
+    fg.print_result();
+    std::cout << "\n";
 
-    //Greedy, the same graph
-    GraphBoost greedy(bruteForce);
-    //greedy.printGraph();
-    greedy.run(processorCount);
-    greedy.printResult();
+    MIS::FinderBrute fb(gm, p);
+    fb.run();
+    std::cout << fb.get_time() << " ms\n";
+    fb.print_result();
 
     return 0;
 }
