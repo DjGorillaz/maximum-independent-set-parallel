@@ -1,7 +1,6 @@
 #pragma once
 
 #include "finder.h"
-#include "graph.h"
 
 namespace MaximumIndependentSet
 {
@@ -9,17 +8,16 @@ namespace MaximumIndependentSet
     {
     public:
         FinderBrute(const Graph& graph, int nCpu = 1);
-        void run() override;
         decltype(std::chrono::milliseconds().count()) get_time() const override;
-        void get_result() const override;
-        void print_result() const override;
+        std::vector<int> get_result() const override;
+        std::string get_name() const override;
 
     private:
-        void find_per_thread(unsigned long long first, unsigned long long last);
+        unsigned long long get_nTasks() const override;
+        void find_per_thread(unsigned long long first, unsigned long long last) override;
         void find_per_subset(std::vector<bool>& subset, unsigned long long& nSubset);
-        std::chrono::milliseconds ms;
-        std::map<boost::thread::id, std::pair<int, unsigned long long>> vSetCount; //Number of vertices
-        // std::map<boost::graph_traits<GraphBoost>::vertex_descriptor, std::vector<bool>> map;
-        int index_max = 0;
+        void calc_result() override;
+
+        std::map<boost::thread::id, std::pair<int, unsigned long long>> vSetCount;
     };
 }
