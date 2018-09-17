@@ -1,0 +1,38 @@
+language: cpp
+
+os:
+  - linux
+
+compiler:
+  - gcc
+
+env:
+  - platform=x86 configuration=Release target_cpu=x86
+  - platform=x64 configuration=Release target_cpu=amd64
+
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - g++-8
+
+
+install:
+  - sudo apt-get install libboost-test-dev -y
+
+before_script:
+  - export CXX="g++-8"
+
+script:
+  - cd build
+  - cmake .. -DTARGET_CPU=$target_cpu
+  - cmake --build . --config $configuration
+#- cmake --build . --target test
+
+#branches:
+#  only:
+#  - master
+#  - "/^v\\d+\\./"
+
+
