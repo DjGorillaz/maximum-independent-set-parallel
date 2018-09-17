@@ -11,14 +11,14 @@ namespace MaximumIndependentSet
         boost::undirectedS
     >;
 
-    class Graph//: public Graph
+    class Graph
     {
     public:
         Graph(int n, float conn);
 
     private:
-        int nVertices;      //Number of vertices
-        float connectivity; //Graph connectivity, %
+        int nVertices;
+        float connectivity;
         GraphBoost graphB; 
 
         friend class Finder;

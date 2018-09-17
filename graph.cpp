@@ -1,8 +1,7 @@
 
 #include "graph.h"
 
-#include <time.h>
-// #include <cstdlib>
+#include <random>
 
 namespace MaximumIndependentSet
 {
@@ -11,14 +10,16 @@ namespace MaximumIndependentSet
         connectivity(conn),
         graphB(n)
     {
-        //Generate graph
-        //todo
-        srand(time(NULL));
-        for(int i = 0; i < nVertices; ++i)
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_real_distribution<> dist(0, 1.0);
+
+        //Generate edges
+        for(int i = 0; i < nVertices-1; ++i)
         {
             for(int j = i+1; j < nVertices; ++j)
             {
-                if((static_cast<float>(rand() % 101) / 100) < connectivity)
+                if(dist(gen) < connectivity)
                 {
                     boost::add_edge(i, j, graphB);
                 }
@@ -30,8 +31,8 @@ namespace MaximumIndependentSet
     {
         using namespace boost;
 
+        //Check if graph is empty
         auto [curr_edge, end_edge] = edges(graph.graphB);
-        //No edges
         if (curr_edge == end_edge)
         {
             os << "Graph without edges\n";
