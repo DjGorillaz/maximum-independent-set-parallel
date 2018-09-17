@@ -19,7 +19,7 @@ addons:
 
 
 install:
-  - sudo apt-get install libboost-test-dev -y
+  - sudo apt-get install libboost-all-dev -y
 
 before_script:
   - export CXX="g++-8"
