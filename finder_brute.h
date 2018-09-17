@@ -13,11 +13,10 @@ namespace MaximumIndependentSet
         std::string get_name() const override;
 
     private:
-        unsigned long long get_nTasks() const override;
         void find_per_thread(unsigned long long first, unsigned long long last) override;
-        void find_per_subset(std::vector<bool>& subset, unsigned long long& nSubset);
+        void find_per_subset(std::vector<bool>& subset, unsigned long long nSubset);
         void calc_result() override;
 
-        std::map<boost::thread::id, std::pair<int, unsigned long long>> vSetCount;
+        std::map<boost::thread::id, std::pair<int, unsigned long long>> ind_set_count;
     };
 }
