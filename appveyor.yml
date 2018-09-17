@@ -1,0 +1,76 @@
+# GENERAL CONFIGURATION #
+#version format
+version: '1.0.{build}'
+
+#branches to build
+#branches:
+#  only:
+#    - master
+
+#don't build on tags
+skip_tags: true
+
+# ENVIRONMENT CONFIGURATION #
+  
+clone_folder: c:\%PROJECT_NAME%
+
+shallow_clone: true
+
+clone_depth: 5   
+
+environment:
+  PROJECT_NAME: maximum-independent-set-parallel
+  matrix:
+  - id: msvc-x86
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    platform: x86
+    compiler: msvc-15
+    generator: "Visual Studio 15 2017"
+  - id: msvc-x64
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    platform: x64
+    compiler: msvc-15
+    generator: "Visual Studio 15 2017 Win64"
+
+configuration:
+  - Release
+
+install:
+#  - set ORIGPATH=%PATH%
+  - vcpkg install boost-graph:%platform%-windows boost-thread:%platform%-windows 
+
+#the build fail once the job fails
+matrix:
+  fast_finish: true
+
+# BUILD CONFIGURATION #
+# before_build:
+
+build_script:
+  - cd c:\%PROJECT_NAME%\
+  - md build
+  - cd build
+  - cmake .. -G "%generator%" -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake
+  - cmake --build . --config %configuration%  
+
+after_build:
+#  - cd C:\%PROJECT_NAME%\build\%configuration%\
+#  - 7z a %PROJECT_NAME%-win-%platform%.zip ./*
+#  - move %PROJECT_NAME%-win-%platform%.zip C:\%PROJECT_NAME%\%PROJECT_NAME%-win-%platform%.zip
+
+# TEST CONFIGURATION #
+test: off
+
+# ARTIFACTS AND DEPLOYMENT CONFIGURATION #
+#artifacts:
+#  - path: '%PROJECT_NAME%-win-%platform%.zip'
+#    name: artifacts
+    
+#deploy:
+#  release: v$(appveyor_build_version)
+#  description: Parallel algorithms for the maximal independent set problem
+#  tag: v$(appveyor_build_version)
+#  provider: GitHub
+#  auth_token:
+#    secure:
+#  artifact: '%PROJECT_NAME%-win-%platform%.zip'
