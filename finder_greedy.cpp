@@ -6,18 +6,10 @@ namespace MaximumIndependentSet
 
     FinderGreedy::FinderGreedy(const Graph& graph_, int nCpu_):
         Finder(graph_, "Greedy algorithm", nCpu_),
-        vSetCount(nVertices, 0)  //number of independent vertices for each vertex
+        ind_set_count(nVertices, 0),  //number of independent vertices for each vertex
+        matrix(nVertices, std::vector<VertexProperties>(nVertices, {false,false}))
     {
-        //Create N-length vector for each vertex
-        for(const auto& vertex: make_iterator_range(vertices(graphB)))
-        {
-            map.emplace(vertex, std::vector<std::pair<bool, bool>>(nVertices, {false, false}));
-        }
-    }
- 
-    unsigned long long FinderGreedy::get_nTasks() const
-    {
-        return static_cast<unsigned long long>(nVertices);
+        nTasks = nVertices;
     }
 
     void FinderGreedy::find_per_thread(unsigned long long first, unsigned long long last)
@@ -28,36 +20,34 @@ namespace MaximumIndependentSet
         //The range of vertices is set for each CPU
         for(auto i = first; i <= last; ++currVertex, ++i)
         {
-            find_per_vertex(currVertex, i);
+            find_per_vertex(*currVertex, i);
         }
     }
 
-    void FinderGreedy::find_per_vertex(boost::graph_traits<GraphBoost>::vertex_iterator startVertex, unsigned long long i)
+    void FinderGreedy::find_per_vertex(boost::graph_traits<GraphBoost>::vertex_descriptor startVertex, unsigned long long i)
     {
-        if(get<0>(map[*startVertex][i]) == true) //If the vertex is already viewed
+        if(matrix[startVertex][i].viewed == true) //If the vertex is already viewed
             return;
-        get<0>(map[*startVertex][i]) = true; //The vertex is viewed
-        get<1>(map[*startVertex][i]) = true; //The vertex is already in set
-        vSetCount[i] += 1; //Increase size of independent set by 1
+        matrix[startVertex][i].viewed = true;
+        matrix[startVertex][i].in_set = true;
+        ++ind_set_count[i]; //Increase size of independent set
 
         //Look through all neighbors
-        for(const auto& adjVertex: make_iterator_range(adjacent_vertices(*startVertex, graphB)))
+        for(const auto& adjVertex: make_iterator_range(adjacent_vertices(startVertex, graphB)))
         {
-            if(get<0>(map[adjVertex][i]) == false) //The vertex isn't viewed
+            if(matrix[adjVertex][i].viewed == false) //The vertex isn't viewed
             {
-                get<0>(map[adjVertex][i]) = true; //The vertex is viewed
-                get<1>(map[adjVertex][i]) = false; //The vertex is not in set
+                matrix[adjVertex][i].viewed = true;
+                matrix[adjVertex][i].in_set = false;
             }
         }
 
-        //Look through all neighbors
-        for(const auto& adjVertex: make_iterator_range(adjacent_vertices(*startVertex, graphB)))
+        //Recursive call for all neighbors of neighbors
+        for(const auto& adjVertex: make_iterator_range(adjacent_vertices(startVertex, graphB)))
         {
-            //Look through all neighbors of neighbors
             for(const auto& adjAdjVertex: make_iterator_range(adjacent_vertices(adjVertex, graphB)))
             {
-                //Recursive call
-                find_per_vertex(graph_traits<GraphBoost>::vertex_iterator(adjAdjVertex), i);
+                find_per_vertex(adjAdjVertex, i);
             }
         }
     }
@@ -65,13 +55,14 @@ namespace MaximumIndependentSet
     void FinderGreedy::calc_result()
     {
         //Find maximal indpendent set
-        auto max = std::max_element(vSetCount.begin(), vSetCount.end());
-        index_max = std::distance(vSetCount.begin(), max);
+        auto max = std::max_element(ind_set_count.begin(), ind_set_count.end());
+        max_independent_set.reserve(*max);
+        index_max = std::distance(ind_set_count.begin(), max);
         
-        for(const auto& vertex: make_iterator_range(vertices(graphB)))
+        for(int i = 0; i < nVertices; ++i)
         {
-            if(get<1>(map[vertex][index_max]) == true) //Is in set
-                max_independent_set.push_back(static_cast<int>(vertex));
+            if(matrix[i][index_max].in_set == true)
+                max_independent_set.push_back(i);
         }
     }
 

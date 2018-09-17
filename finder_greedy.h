@@ -13,12 +13,17 @@ namespace MaximumIndependentSet
         std::string get_name() const override;
 
     private:
-        unsigned long long get_nTasks() const override;
         void find_per_thread(unsigned long long first, unsigned long long last) override;
-        void find_per_vertex(boost::graph_traits<GraphBoost>::vertex_iterator startVertex, unsigned long long i);
+        void find_per_vertex(boost::graph_traits<GraphBoost>::vertex_descriptor startVertex, unsigned long long i);
         void calc_result() override;
 
-        std::vector<int> vSetCount; //Number of vertices in each set
-        std::map<boost::graph_traits<GraphBoost>::vertex_descriptor, std::vector<std::pair<bool, bool>>> map; //Key = vertex
+        struct VertexProperties
+        {
+            bool viewed = false;
+            bool in_set = false;
+        };
+
+        std::vector<int> ind_set_count;
+        std::vector<std::vector<VertexProperties>> matrix; //nVertices x nVertices
     };
 }
