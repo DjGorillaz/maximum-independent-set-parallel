@@ -40,7 +40,7 @@ namespace MaximumIndependentSet
                 if (subset[l] == false) continue;
 
                 //If edge is in the matrix => set is not independent
-                auto [edge, isEdgeExists] = edge(k, l, graphB);
+                auto [some_edge, isEdgeExists] = edge(k, l, graphB);
                 if (isEdgeExists == true)
                     return;
             }
