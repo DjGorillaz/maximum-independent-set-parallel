@@ -21,11 +21,11 @@ set(SRCS main.cpp
 add_executable(${PROJECT_NAME} ${SRCS})
 
 #Treat warnings as errors
-if (MSVC)
-    target_compile_options(${PROJECT_NAME} PRIVATE /W4 /WX)
-else()
-    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic -Werror)
-endif()
+#if (MSVC)
+#    target_compile_options(${PROJECT_NAME} PRIVATE /W4 /WX)
+#else()
+#    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic -Werror)
+#endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
     CXX_STANDARD 17
