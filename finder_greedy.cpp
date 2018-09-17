@@ -1,140 +1,83 @@
 #include "finder_greedy.h"
 
-#include <iostream>
-#include <chrono>
-#include <algorithm>
-
-#include <boost/thread.hpp>
-
 namespace MaximumIndependentSet
 {
     using namespace boost;
 
     FinderGreedy::FinderGreedy(const Graph& graph_, int nCpu_):
-        Finder(graph_, nCpu_)
+        Finder(graph_, "Greedy algorithm", nCpu_),
+        ind_set_count(nVertices, 0),  //number of independent vertices for each vertex
+        matrix(nVertices, std::vector<VertexProperties>(nVertices, {false,false}))
     {
-        //Create N-length vector for each vertex
-        for(auto [curr, end] = vertices(graphB); curr != end; ++curr)
-        {
-            map.emplace(*curr, std::vector<std::pair<bool, bool>>(nVertices, {false, false}));
-        }
-
-        vSetCount.resize(nVertices, 0); //This vector contains number of independent vertices for each vertex
-    }
-    
-    void FinderGreedy::run()
-    {
-        using namespace std::chrono;
-        auto t0 = high_resolution_clock::now();
-       
-        int perCpu = nVertices / nCpu;
-
-        int l = 0;
-        int r = perCpu - 1 + (nVertices % nCpu);
-
-
-        thread_group threadGroup;
-        //Parallelization of task
-        while(l < nVertices)
-        {
-            thread* th = new thread(&FinderGreedy::find_per_thread, this, l, r);
-            threadGroup.add_thread(th);
-            l = r + 1;
-            r = r + perCpu;
-        }
-        
-        threadGroup.join_all();
-
-        //Find maximal indpendent set
-        int maxCount = 0, index = 0;
-
-        auto max = std::max_element(vSetCount.begin(), vSetCount.end());
-        index_max = std::distance(vSetCount.begin(), max);
-        /*
-        for(int i = 0; i < vSetCount.size(); ++i)
-        {
-            if(vSetCount[i] > maxCount)
-            {
-                maxCount = vSetCount[i];
-                index = i;
-            }
-        }
-        */
-
-        auto t1 = high_resolution_clock::now();
-        ms = duration_cast<milliseconds>(t1-t0);
+        nTasks = nVertices;
     }
 
-    void FinderGreedy::find_per_thread(int first, int last)
+    void FinderGreedy::find_per_thread(unsigned long long first, unsigned long long last)
     {
-        // auto start = vertex(first, boost_graph);
-        //The range of vertices is set for each processor
         auto [currVertex, end] = vertices(graphB);
         currVertex += first;
 
-        for(int i = first; i <= last; ++currVertex, ++i)
+        //The range of vertices is set for each CPU
+        for(auto i = first; i <= last; ++currVertex, ++i)
         {
-            find_per_vertex(currVertex, i);
+            find_per_vertex(*currVertex, i);
         }
     }
 
-    void FinderGreedy::find_per_vertex(boost::graph_traits<GraphBoost>::vertex_iterator startVertex, int i)
+    void FinderGreedy::find_per_vertex(boost::graph_traits<GraphBoost>::vertex_descriptor startVertex, unsigned long long i)
     {
-        //hello
-        if(get<0>(map[*startVertex][i]) == true) //If the vertex is already viewed
+        if(matrix[startVertex][i].viewed == true) //If the vertex is already viewed
             return;
-        get<0>(map[*startVertex][i]) = true; //The vertex is viewed
-        get<1>(map[*startVertex][i]) = true; //The vertex is already in set
-        vSetCount[i] += 1; //Increase size of independent set by 1
+        matrix[startVertex][i].viewed = true;
+        matrix[startVertex][i].in_set = true;
+        ++ind_set_count[i]; //Increase size of independent set
 
-        auto [adjStart, adjEnd] = adjacent_vertices(*startVertex, graphB);
         //Look through all neighbors
-        for(; adjStart != adjEnd; ++adjStart)
+        for(const auto& adjVertex: make_iterator_range(adjacent_vertices(startVertex, graphB)))
         {
-            if(get<0>(map[*adjStart][i]) == false) //The vertex isn't viewed
+            if(matrix[adjVertex][i].viewed == false) //The vertex isn't viewed
             {
-            get<0>(map[*adjStart][i]) = true; //The vertex is viewed
-            get<1>(map[*adjStart][i]) = false; //The vertex is not in set
+                matrix[adjVertex][i].viewed = true;
+                matrix[adjVertex][i].in_set = false;
             }
         }
 
-        //Look through all neighbors
-        boost::tie(adjStart, adjEnd) = adjacent_vertices(*startVertex, graphB);
-        for(; adjStart != adjEnd; ++adjStart)
+        //Recursive call for all neighbors of neighbors
+        for(const auto& adjVertex: make_iterator_range(adjacent_vertices(startVertex, graphB)))
         {
-            //Look through all neighbors of neighbors
-            graph_traits<GraphBoost>::adjacency_iterator adj2Start, adj2End;
-            boost::tie(adj2Start, adj2End) = adjacent_vertices(*adjStart, graphB);
-            for(; adj2Start != adj2End; ++adj2Start)
+            for(const auto& adjAdjVertex: make_iterator_range(adjacent_vertices(adjVertex, graphB)))
             {
-                //Recursive call
-                find_per_vertex(graph_traits<GraphBoost>::vertex_iterator(*adj2Start), i);
+                find_per_vertex(adjAdjVertex, i);
             }
         }
     }
 
-    void FinderGreedy::print_result() const
+    void FinderGreedy::calc_result()
     {
-        std::cout << "Greedy algorithm\n";
-        // std::cout << "Size: " << index_max << " vertices\n";
-        std::cout << "Result: ( ";
-        // auto [start, end] = vertices(graphB);
-
+        //Find maximal indpendent set
+        auto max = std::max_element(ind_set_count.begin(), ind_set_count.end());
+        max_independent_set.reserve(*max);
+        index_max = std::distance(ind_set_count.begin(), max);
+        
         for(int i = 0; i < nVertices; ++i)
         {
-                if(std::get<1>(map.at(index_max).at(i)))
-                    std::cout << i << " ";
+            if(matrix[i][index_max].in_set == true)
+                max_independent_set.push_back(i);
         }
-            std::cout << ")\n\n";
     }
-        
+
     decltype(std::chrono::milliseconds().count()) FinderGreedy::get_time() const
     {        
         return ms.count();
     }
     
-    void FinderGreedy::get_result() const 
+    std::vector<int> FinderGreedy::get_result() const 
     {
-        std::cout << "result\n";
+        return max_independent_set;
+    }
+
+    std::string FinderGreedy::get_name() const
+    {
+        return algo_name;
     }
 }

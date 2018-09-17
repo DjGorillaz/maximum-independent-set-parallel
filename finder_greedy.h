@@ -1,7 +1,6 @@
 #pragma once
 
 #include "finder.h"
-#include "graph.h"
 
 namespace MaximumIndependentSet
 {
@@ -9,18 +8,22 @@ namespace MaximumIndependentSet
     {
     public:
         FinderGreedy(const Graph& graph, int nCpu = 1);
-        void run() override;
         decltype(std::chrono::milliseconds().count()) get_time() const override;
-        void get_result() const override;
-        void print_result() const override;
+        std::vector<int> get_result() const override;
+        std::string get_name() const override;
 
     private:
-        void find_per_thread(int first, int last);
-        void find_per_vertex(boost::graph_traits<GraphBoost>::vertex_iterator startVertex, int i);
-        // Map map; //key = vertex
-        std::chrono::milliseconds ms;
-        std::vector<int> vSetCount; //Number of vertices in each set
-        std::map<boost::graph_traits<GraphBoost>::vertex_descriptor, std::vector<std::pair<bool, bool>>> map;
-        int index_max = 0;
+        void find_per_thread(unsigned long long first, unsigned long long last) override;
+        void find_per_vertex(boost::graph_traits<GraphBoost>::vertex_descriptor startVertex, unsigned long long i);
+        void calc_result() override;
+
+        struct VertexProperties
+        {
+            bool viewed = false;
+            bool in_set = false;
+        };
+
+        std::vector<int> ind_set_count;
+        std::vector<std::vector<VertexProperties>> matrix; //nVertices x nVertices
     };
 }

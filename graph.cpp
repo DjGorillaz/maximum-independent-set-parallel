@@ -1,16 +1,7 @@
 
-#include <iostream>
-//#include <boost/thread.hpp>
-
 #include "graph.h"
-#include <boost/config.hpp>
-//#include <iostream>
-//#include <fstream>
-//#include <string>
-#include <boost/graph/adjacency_list.hpp>
 
-#include <time.h>
-#include <cstdlib>
+#include <random>
 
 namespace MaximumIndependentSet
 {
@@ -19,13 +10,16 @@ namespace MaximumIndependentSet
         connectivity(conn),
         graphB(n)
     {
-        //Generate graph
-        srand(time(NULL));
-        for(int i = 0; i < nVertices; ++i)
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_real_distribution<> dist(0, 1.0);
+
+        //Generate edges
+        for(int i = 0; i < nVertices-1; ++i)
         {
             for(int j = i+1; j < nVertices; ++j)
             {
-                if((static_cast<float>(rand() % 101) / 100) < connectivity)
+                if(dist(gen) < connectivity)
                 {
                     boost::add_edge(i, j, graphB);
                 }
@@ -33,19 +27,29 @@ namespace MaximumIndependentSet
         }
     }
 
-    void Graph::print() const
+    std::ostream& operator<<(std::ostream& os, const Graph& graph)
     {
         using namespace boost;
-        
-        std::size_t prev_vertex = 0;
-        for (auto [curr, end] = edges(graphB); curr != end; ++curr)
+
+        //Check if graph is empty
+        auto [curr_edge, end_edge] = edges(graph.graphB);
+        if (curr_edge == end_edge)
         {
-            auto curr_vertex = source(*curr, graphB);
+            os << "Graph without edges\n";
+            return os;
+        }
+
+        //Print edges
+        auto prev_vertex = source(*curr_edge, graph.graphB);
+        for (; curr_edge != end_edge; ++curr_edge)
+        {
+            auto curr_vertex = source(*curr_edge, graph.graphB);
             if (curr_vertex != prev_vertex) 
-                std::cout << "\n";
-            std::cout << *curr << " ";
+                os << "\n";
+            os << *curr_edge << " ";
             prev_vertex = curr_vertex;
         }
-        std::cout << std::endl;
-    }
+        os << std::endl;
+        return os;
+    } 
 }
