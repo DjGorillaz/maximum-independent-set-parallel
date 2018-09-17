@@ -7,7 +7,10 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
 #set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-find_package(BOOST COMPONENTS thread graph asio REQUIRED)
+#find_package(Boost 1.36.0 COMPONENTS date_time filesystem system ...)
+find_package(Boost COMPONENTS thread graph)
+
+include_directories(${Boost_INCLUDE_DIRS})
 
 set(SRCS main.cpp
          graph.cpp
@@ -31,14 +34,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
 
-#FIND_PACKAGE( Boost 1.40 COMPONENTS program_options REQUIRED )
-#INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
-
-#ADD_EXECUTABLE( anyExecutable myMain.cpp )
-
-
 #target_link_libraries(${PROJECT_NAME}   Boost::thread
 #                                        Boost::graph
 #)
-
-#-DCMAKE_TOOLCHAIN_FILE=D:/dev/vcpkg/scripts/buildsystems/vcpkg.cmake
