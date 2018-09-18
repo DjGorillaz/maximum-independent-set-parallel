@@ -41,7 +41,7 @@ build_script:
   - cd c:\%PROJECT_NAME%\
   - md build
   - cd build
-  - cmake .. -G "%generator%" -DBOOST_ROOT=C:\Libraries\boost_1_67_0
+  - cmake -DBOOST_ROOT=C:\Libraries\boost_1_67_0 -G "%generator%" ..
   - cmake --build . --config %configuration%  
 
 # TEST CONFIGURATION #
