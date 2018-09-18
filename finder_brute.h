@@ -4,7 +4,7 @@
 
 namespace MaximumIndependentSet
 {
-    class FinderBrute: public Finder
+    class FinderBrute: public Finder<std::uintmax_t>
     {
     public:
         FinderBrute(const Graph& graph, int nCpu = 1);
@@ -13,10 +13,10 @@ namespace MaximumIndependentSet
         std::string get_name() const override;
 
     private:
-        void find_per_thread(unsigned long long first, unsigned long long last) override;
-        void find_per_subset(std::vector<bool>& subset, unsigned long long nSubset);
+        void find_per_thread(std::uintmax_t first, std::uintmax_t last) override;
+        void find_per_subset(std::vector<bool>& subset, std::uintmax_t nSubset);
         void calc_result() override;
 
-        std::map<boost::thread::id, std::pair<int, unsigned long long>> ind_set_count;
+        std::map<boost::thread::id, std::pair<int, std::uintmax_t>> ind_set_count;
     };
 }

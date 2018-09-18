@@ -4,7 +4,7 @@
 
 namespace MaximumIndependentSet
 {
-    class FinderGreedy: public Finder
+    class FinderGreedy: public Finder<int>
     {
     public:
         FinderGreedy(const Graph& graph, int nCpu = 1);
@@ -13,8 +13,8 @@ namespace MaximumIndependentSet
         std::string get_name() const override;
 
     private:
-        void find_per_thread(unsigned long long first, unsigned long long last) override;
-        void find_per_vertex(boost::graph_traits<GraphBoost>::vertex_descriptor startVertex, unsigned long long i);
+        void find_per_thread(int, int) override;
+        void find_per_vertex(boost::graph_traits<GraphBoost>::vertex_descriptor startVertex, int i);
         void calc_result() override;
 
         struct VertexProperties

@@ -7,17 +7,17 @@ namespace MaximumIndependentSet
     FinderBrute::FinderBrute(const Graph& graph_, int nCpu_):
         Finder(graph_, "Brute force algorithm", nCpu_)
     {
-        nTasks = static_cast<unsigned long long>(pow(2, nVertices));
+        nTasks = static_cast<std::uintmax_t>(pow(2, nVertices));
     }
   
-    void FinderBrute::find_per_thread(unsigned long long first, unsigned long long last)
+    void FinderBrute::find_per_thread(std::uintmax_t first, std::uintmax_t last)
     {
         //The range of subsets is set for each CPU
         for(auto i = first; i <= last; ++i)
         {
             //Convert number of subset to vector<bool>
             std::vector<bool> subset(nVertices, false);
-            unsigned long long nSubset = i;
+            std::uintmax_t nSubset = i;
             for (int j = 0; j < nVertices; ++j) 
             {
                 subset[j] = (nSubset >> j) & 1;
@@ -26,7 +26,7 @@ namespace MaximumIndependentSet
         }
     }
 
-    void FinderBrute::find_per_subset(std::vector<bool>& subset, unsigned long long nSubset)
+    void FinderBrute::find_per_subset(std::vector<bool>& subset, std::uintmax_t nSubset)
     {
         int curr_set_size = 0;
 
