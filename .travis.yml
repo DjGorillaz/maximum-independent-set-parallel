@@ -25,7 +25,7 @@ install:
 
 before_script:
   - export CXX="g++-8"
-  - cd /usr/src/googletest
+  - cd /usr/src/gtest
   - sudo cmake .
   - sudo cmake --build . --target install
 
