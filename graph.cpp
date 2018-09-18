@@ -27,6 +27,16 @@ namespace MaximumIndependentSet
         }
     }
 
+    Graph::Graph(const std::vector<std::pair<int,int>>& edges)
+    {
+        //Generate edges
+        for(const auto& edge: edges)
+        {
+            boost::add_edge(edge.first, edge.second, graphB);
+        }
+        nVertices = static_cast<int>(num_vertices(graphB));
+    }
+
     std::ostream& operator<<(std::ostream& os, const Graph& graph)
     {
         using namespace boost;
@@ -35,7 +45,7 @@ namespace MaximumIndependentSet
         auto [curr_edge, end_edge] = edges(graph.graphB);
         if (curr_edge == end_edge)
         {
-            os << "Graph without edges\n";
+            os << "Graph without edges";
             return os;
         }
 
@@ -49,7 +59,6 @@ namespace MaximumIndependentSet
             os << *curr_edge << " ";
             prev_vertex = curr_vertex;
         }
-        os << std::endl;
         return os;
     } 
 }

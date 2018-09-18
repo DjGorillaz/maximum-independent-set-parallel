@@ -3,12 +3,15 @@ language: cpp
 os:
   - linux
 
+branches:
+  only:
+  - develop
+
 compiler:
   - gcc
 
 env:
-  - PLATFORM="x86" CONFIGURATION="Release" TARGET_CPU="-m32"
-  - PLATFORM="x64" CONFIGURATION="Release" TARGET_CPU="-m64"
+  - CONFIGURATION="Release"
 
 addons:
   apt:
@@ -22,22 +25,9 @@ install:
 
 before_script:
   - export CXX="g++-8"
-  - export CPPFLAGS=$TARGET_CPU
 
 script:
   - mkdir ./build
   - cd ./build
-  - cmake .. #-DTARGET_CPU=$TARGET_CPU
+  - cmake ..
   - cmake --build . --config $CONFIGURATION
-  - echo $PLATFORM
-  - echo $CONFIGURATION
-  - echo %TARGET_CPU
-
-#- cmake --build . --target test
-
-#branches:
-#  only:
-#  - master
-#  - "/^v\\d+\\./"
-
-
