@@ -10,6 +10,8 @@ branches:
 #don't build on tags
 skip_tags: true
 
+cache: c:\tools\vcpkg\installed\
+
 # ENVIRONMENT CONFIGURATION #
 clone_folder: c:\%PROJECT_NAME%
 shallow_clone: true
@@ -48,4 +50,5 @@ build_script:
   - cmake --build . --config %configuration%  
 
 # TEST CONFIGURATION #
-test: off
+test_script:
+    - ctest -C %configuration% --output-on-failure

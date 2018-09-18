@@ -31,3 +31,4 @@ script:
   - cd ./build
   - cmake ..
   - cmake --build . --config $CONFIGURATION
+  - ctest -C $CONFIGURATION --output-on-failure
