@@ -1,5 +1,6 @@
 #include <iostream>
 #include <thread>
+#include <variant>
 
 #include "finder_greedy.h"
 #include "finder_brute.h"
@@ -29,29 +30,42 @@ int main()
 
         float connectivity = 0.6f;
         MIS::Graph gm(nVertices, connectivity);
-        std::cout << "Generated graph:\n" << gm;
+        std::cout << "Generated graph:\n" << gm << "\n";
 
-        std::array<std::unique_ptr<MIS::Finder>, 2> finders = {std::make_unique<MIS::FinderGreedy>(gm, nCpu),
-                                                               std::make_unique<MIS::FinderBrute>(gm, nCpu)};
-        for(const auto& finder: finders)
+        std::array<std::variant<std::unique_ptr<MIS::Finder<int>>,
+                                std::unique_ptr<MIS::Finder<std::uintmax_t>>>,
+                                2>
+                    finders =   {std::make_unique<MIS::FinderGreedy>(gm, nCpu),
+                                 std::make_unique<MIS::FinderBrute>(gm, nCpu)};
+
+        for(const auto& variant_finder: finders)
         {
-            finder->run();
+            std::visit(
+                [](const auto& finder){
+                    finder->run();
+                    std::cout << "\n" << finder->get_name() << "\n";
+                    std::cout << "Time: " << finder->get_time() << " ms\n";
+                },
+                variant_finder);
 
-            std::cout << "\n" << finder->get_name() << "\n";
-            std::cout << "Time: " << finder->get_time() << " ms\n";
             std::cout << "Result:\t(";
+            
+            auto vertices = std::visit(
+                [](const auto& finder){
+                    return finder->get_result();
+                },
+                variant_finder);
 
             //std::make_ostream_joiner - iterator/experimental
             //std::copy(max_independent_set.begin(), max_independent_set.end(), std::make_ostream_joiner(std::cout, " "));
-
             std::string delimiter = "";
-            for(const auto& vertex: finder->get_result())
+            for(const auto& vertex: vertices)
             {
                 std::cout << delimiter << vertex;
                 delimiter = ", ";
             }
             std::cout << ")\n";
-        }                              
+        }
     }
     catch(std::exception& ex)
     {

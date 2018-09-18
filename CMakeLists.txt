@@ -11,7 +11,6 @@ include_directories(${Boost_INCLUDE_DIRS})
 
 set(SRCS main.cpp
          graph.cpp
-         finder.cpp
          finder_greedy.cpp
          finder_brute.cpp)
 

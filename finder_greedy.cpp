@@ -12,7 +12,7 @@ namespace MaximumIndependentSet
         nTasks = nVertices;
     }
 
-    void FinderGreedy::find_per_thread(unsigned long long first, unsigned long long last)
+    void FinderGreedy::find_per_thread(int first, int last)
     {
         auto [currVertex, end] = vertices(graphB);
         currVertex += first;
@@ -24,7 +24,7 @@ namespace MaximumIndependentSet
         }
     }
 
-    void FinderGreedy::find_per_vertex(boost::graph_traits<GraphBoost>::vertex_descriptor startVertex, unsigned long long i)
+    void FinderGreedy::find_per_vertex(boost::graph_traits<GraphBoost>::vertex_descriptor startVertex, int i)
     {
         if(matrix[startVertex][i].viewed == true) //If the vertex is already viewed
             return;
@@ -57,7 +57,7 @@ namespace MaximumIndependentSet
         //Find maximal indpendent set
         auto max = std::max_element(ind_set_count.begin(), ind_set_count.end());
         max_independent_set.reserve(*max);
-        index_max = std::distance(ind_set_count.begin(), max);
+        index_max = static_cast<int>(std::distance(ind_set_count.begin(), max));
         
         for(int i = 0; i < nVertices; ++i)
         {
