@@ -32,6 +32,9 @@ environment:
 configuration:
   - Release
 
+install:
+  - vcpkg install boost-graph:%platform%-windows boost-thread:%platform%-windows 
+
 #the build fail once the job fails
 matrix:
   fast_finish: true
@@ -41,7 +44,7 @@ build_script:
   - cd c:\%PROJECT_NAME%\
   - md build
   - cd build
-  - cmake -DBOOST_ROOT=C:\Libraries\boost_1_67_0 -G "%generator%" ..
+  - cmake .. -G "%generator%" -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake
   - cmake --build . --config %configuration%  
 
 # TEST CONFIGURATION #
