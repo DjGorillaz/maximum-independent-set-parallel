@@ -3,9 +3,9 @@
 version: '1.0.{build}'
 
 #branches to build
-#branches:
-#  only:
-#    - master
+branches:
+  only:
+    - develop
 
 #don't build on tags
 skip_tags: true

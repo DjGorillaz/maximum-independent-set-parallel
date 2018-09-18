@@ -3,9 +3,9 @@ language: cpp
 os:
   - linux
 
-#branches:
-#  only:
-#  - master
+branches:
+  only:
+  - develop
 
 compiler:
   - gcc
