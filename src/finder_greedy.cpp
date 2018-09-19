@@ -12,9 +12,9 @@ namespace MaximumIndependentSet
         nTasks = nVertices;
     }
 
-    void FinderGreedy::find_per_thread(int first, int last)
+    void FinderGreedy::find_per_thread(int first, int last, int /* thread_id */)
     {
-        auto [currVertex, end] = vertices(graphB);
+        auto [currVertex, end] = vertices(get_graphB());
         currVertex += first;
 
         //The range of vertices is set for each CPU
@@ -31,6 +31,9 @@ namespace MaximumIndependentSet
         matrix[startVertex][i].viewed = true;
         matrix[startVertex][i].in_set = true;
         ++ind_set_count[i]; //Increase size of independent set
+
+        //Get boost graph
+        const auto& graphB = get_graphB();
 
         //Look through all neighbors
         for(const auto& adjVertex: make_iterator_range(adjacent_vertices(startVertex, graphB)))

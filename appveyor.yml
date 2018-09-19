@@ -10,6 +10,8 @@ branches:
 #don't build on tags
 skip_tags: true
 
+cache: c:\tools\vcpkg\installed\
+
 # ENVIRONMENT CONFIGURATION #
 clone_folder: c:\%PROJECT_NAME%
 shallow_clone: true
@@ -33,7 +35,7 @@ configuration:
   - Release
 
 install:
-  - vcpkg install boost-graph:%platform%-windows boost-thread:%platform%-windows 
+  - vcpkg install boost-graph:%platform%-windows boost-thread:%platform%-windows gtest:%platform%-windows
 
 #the build fail once the job fails
 matrix:
@@ -48,4 +50,5 @@ build_script:
   - cmake --build . --config %configuration%  
 
 # TEST CONFIGURATION #
-test: off
+test_script:
+    - ctest -C %configuration% --output-on-failure

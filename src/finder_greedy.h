@@ -13,7 +13,7 @@ namespace MaximumIndependentSet
         std::string get_name() const override;
 
     private:
-        void find_per_thread(int, int) override;
+        void find_per_thread(int l, int r, int thread_id) override;
         void find_per_vertex(boost::graph_traits<GraphBoost>::vertex_descriptor startVertex, int i);
         void calc_result() override;
 

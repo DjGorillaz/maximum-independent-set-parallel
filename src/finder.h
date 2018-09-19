@@ -19,12 +19,13 @@ namespace MaximumIndependentSet
         void run();
 
     private:
-        virtual void find_per_thread(T l, T r) = 0;
+        virtual void find_per_thread(T l, T r, int thread_id) = 0;
         virtual void calc_result() = 0;
 
     protected:
+        const GraphBoost& get_graphB() const;
+
         Graph graph;
-        GraphBoost& graphB;
         int nCpu = 0;
         int nVertices = 0;
         T nTasks = 0;
@@ -37,7 +38,6 @@ namespace MaximumIndependentSet
     template<typename T>
     Finder<T>::Finder(const Graph& graph_, const std::string& name, int nCpu_):
         graph(graph_),
-        graphB(graph.graphB),
         nCpu(nCpu_),
         nVertices(graph_.nVertices),
         algo_name(name)
@@ -57,12 +57,13 @@ namespace MaximumIndependentSet
     
         //Parallelization of task
         thread_group threadGroup;
+        int thread_id = 0;
         while(l < nTasks)
         {
-            thread* th = new thread(&Finder::find_per_thread, this, l, r);
-            threadGroup.add_thread(th);
+            threadGroup.create_thread(bind(&Finder::find_per_thread, this, l, r, thread_id));
             l = r + 1;
             r = r + perCpu;
+            ++thread_id;
         }
         threadGroup.join_all();
 
@@ -70,5 +71,11 @@ namespace MaximumIndependentSet
 
         auto end_time = high_resolution_clock::now();
         ms = duration_cast<milliseconds>(end_time-start_time);
+    }
+
+    template<typename T>
+    const GraphBoost& Finder<T>::get_graphB() const
+    {
+        return graph.graphB;
     }
 }
