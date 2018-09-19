@@ -22,15 +22,15 @@ addons:
 
 install:
   - sudo apt-get install libboost-all-dev libgtest-dev -y
-
-before_script:
-  - export CXX="g++-8"
   - cd /usr/src/gtest
   - sudo env "PATH=$PATH" cmake .
   - sudo env "PATH=$PATH" cmake --build .
 
+before_script:
+  - export CXX="g++-8"
+
 script:
-  - cd $TRAVIS_BUILD_DIR/
+  - cd $TRAVIS_BUILD_DIR
   - mkdir /build
   - cd ./build
   - cmake ..
