@@ -59,8 +59,7 @@ namespace MaximumIndependentSet
         thread_group threadGroup;
         while(l < nTasks)
         {
-            thread* th = new thread(&Finder::find_per_thread, this, l, r);
-            threadGroup.add_thread(th);
+            threadGroup.create_thread(bind(&Finder::find_per_thread, this, l, r, thread_id));
             l = r + 1;
             r = r + perCpu;
         }
