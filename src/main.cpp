@@ -32,39 +32,29 @@ int main()
         MIS::Graph gm(nVertices, connectivity);
         std::cout << "Generated graph:\n" << gm << "\n";
 
-        std::array<std::variant<std::unique_ptr<MIS::Finder<int>>,
-                                std::unique_ptr<MIS::Finder<std::uintmax_t>>>,
+        std::array<std::variant<MIS::FinderGreedy,
+                                MIS::FinderBrute>,
                                 2>
-                    finders =   {std::make_unique<MIS::FinderGreedy>(gm, nCpu),
-                                 std::make_unique<MIS::FinderBrute>(gm, nCpu)};
+                    finders = {MIS::FinderGreedy(gm, nCpu),
+                               MIS::FinderBrute(gm, nCpu)};
 
-        for(const auto& variant_finder: finders)
+        for(auto& variant_finder: finders)
         {
             std::visit(
-                [](const auto& finder){
-                    finder->run();
-                    std::cout << "\n" << finder->get_name() << "\n";
-                    std::cout << "Time: " << finder->get_time() << " ms\n";
+                [](auto& finder){
+                    finder.run();
+                    std::cout << "\n" << finder.get_name() << "\n";
+                    std::cout << "Time: " << finder.get_time() << " ms\n";
+                    std::cout << "Result:\t(";
+                    std::string delimiter = "";
+                    for(const auto& vertex: finder.get_result())
+                    {
+                        std::cout << delimiter << vertex;
+                        delimiter = ", ";
+                    }
+                    std::cout << ")\n";
                 },
                 variant_finder);
-
-            std::cout << "Result:\t(";
-            
-            auto vertices = std::visit(
-                [](const auto& finder){
-                    return finder->get_result();
-                },
-                variant_finder);
-
-            //std::make_ostream_joiner - iterator/experimental
-            //std::copy(max_independent_set.begin(), max_independent_set.end(), std::make_ostream_joiner(std::cout, " "));
-            std::string delimiter = "";
-            for(const auto& vertex: vertices)
-            {
-                std::cout << delimiter << vertex;
-                delimiter = ", ";
-            }
-            std::cout << ")\n";
         }
     }
     catch(std::exception& ex)

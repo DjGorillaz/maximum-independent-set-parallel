@@ -26,18 +26,18 @@ namespace
         float connectivity = 0.6f;
         MIS::Graph gm(1, connectivity);
 
-        std::array<std::variant<std::unique_ptr<MIS::Finder<int>>,
-                                    std::unique_ptr<MIS::Finder<std::uintmax_t>>>,
-                                    2>
-                        finders =   {std::make_unique<MIS::FinderGreedy>(gm, nCpu),
-                                    std::make_unique<MIS::FinderBrute>(gm, nCpu)};
+        std::array<std::variant<MIS::FinderGreedy,
+                                MIS::FinderBrute>,
+                                2>
+                    finders = {MIS::FinderGreedy(gm, nCpu),
+                               MIS::FinderBrute(gm, nCpu)};
 
-        for(const auto& variant_finder: finders)
+        for(auto& variant_finder: finders)
         {
             std::visit(
-                [](const auto& finder){
-                    finder->run();
-                    ASSERT_TRUE(finder->get_result().size() == 1);
+                [](auto& finder){
+                    finder.run();
+                    ASSERT_TRUE(finder.get_result().size() == 1);
                 },
                 variant_finder);
         }
@@ -88,18 +88,18 @@ namespace
             float connectivity = 0.6f;
             MIS::Graph gm(15, connectivity);
 
-            std::array<std::variant<std::unique_ptr<MIS::Finder<int>>,
-                                        std::unique_ptr<MIS::Finder<std::uintmax_t>>>,
-                                        2>
-                            finders =   {std::make_unique<MIS::FinderGreedy>(gm, nCpu),
-                                        std::make_unique<MIS::FinderBrute>(gm, nCpu)};
+            std::array<std::variant<MIS::FinderGreedy,
+                                MIS::FinderBrute>,
+                                2>
+                    finders = {MIS::FinderGreedy(gm, nCpu),
+                               MIS::FinderBrute(gm, nCpu)};
 
-            for(const auto& variant_finder: finders)
+            for(auto& variant_finder: finders)
             {
                 std::visit(
-                    [](const auto& finder){
-                        finder->run();
-                        ASSERT_GE(finder->get_result().size(), 1);
+                    [](auto& finder){
+                        finder.run();
+                        ASSERT_GE(finder.get_result().size(), 1);
                     },
                     variant_finder);
             }

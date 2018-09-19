@@ -5,12 +5,13 @@ namespace MaximumIndependentSet
     using namespace boost;
 
     FinderBrute::FinderBrute(const Graph& graph_, int nCpu_):
-        Finder(graph_, "Brute force algorithm", nCpu_)
+        Finder(graph_, "Brute force algorithm", nCpu_),
+        ind_set_count(nCpu_, {0,0})
     {
         nTasks = static_cast<std::uintmax_t>(pow(2, nVertices));
     }
   
-    void FinderBrute::find_per_thread(std::uintmax_t first, std::uintmax_t last)
+    void FinderBrute::find_per_thread(std::uintmax_t first, std::uintmax_t last, int thread_id)
     {
         //The range of subsets is set for each CPU
         for(auto i = first; i <= last; ++i)
@@ -22,11 +23,11 @@ namespace MaximumIndependentSet
             {
                 subset[j] = (nSubset >> j) & 1;
             }
-            find_per_subset(subset, nSubset);
+            find_per_subset(subset, nSubset, thread_id);
         }
     }
 
-    void FinderBrute::find_per_subset(std::vector<bool>& subset, std::uintmax_t nSubset)
+    void FinderBrute::find_per_subset(std::vector<bool>& subset, std::uintmax_t nSubset, int thread_id)
     {
         int curr_set_size = 0;
 
@@ -40,7 +41,7 @@ namespace MaximumIndependentSet
                 if (subset[l] == false) continue;
 
                 //If edge is in the matrix => set is not independent
-                auto [some_edge, isEdgeExists] = edge(k, l, graphB);
+                auto [some_edge, isEdgeExists] = edge(k, l, get_graphB());
                 if (isEdgeExists == true)
                     return;
             }
@@ -48,7 +49,6 @@ namespace MaximumIndependentSet
         }
 
         //Update max_set_size for current thread
-        auto thread_id = boost::this_thread::get_id();
         auto& [max_set_size, nSubset_old] = ind_set_count[thread_id];
         if (curr_set_size > max_set_size) 
         {
@@ -61,8 +61,8 @@ namespace MaximumIndependentSet
     {
         //Find maximal indpendent set
         auto max = std::max_element(ind_set_count.begin(), ind_set_count.end(), 
-                                    [](const auto& v1, const auto& v2){ return v1.second.first < v2.second.first;});
-        index_max = max->second.second;
+                                    [](const auto& v1, const auto& v2){ return v1.first < v2.first;});
+        index_max = max->second;
 
         for (int j = 0; j < nVertices; ++j) 
         {
