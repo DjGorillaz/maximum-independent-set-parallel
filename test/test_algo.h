@@ -83,7 +83,7 @@ namespace
 
     TEST_F(TestAlgo, RandomGraphs)
     {
-        for(int i = 0; i < 10; ++i)
+        for(int i = 0; i < 30; ++i)
         {
             float connectivity = 0.6f;
             MIS::Graph gm(15, connectivity);
@@ -99,7 +99,7 @@ namespace
                 std::visit(
                     [](const auto& finder){
                         finder->run();
-                        ASSERT_GT(finder->get_result().size(), 1);
+                        ASSERT_GE(finder->get_result().size(), 1);
                     },
                     variant_finder);
             }
@@ -111,7 +111,7 @@ namespace
         if (nCpu == 1) SUCCEED();
 
         float connectivity = 0.6f;
-        MIS::Graph gm(18, connectivity);
+        MIS::Graph gm(20, connectivity);
 
         MIS::FinderBrute fb_one_thread(gm, 1);
         MIS::FinderBrute fb_multithread(gm, nCpu);
