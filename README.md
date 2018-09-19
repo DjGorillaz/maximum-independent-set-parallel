@@ -16,13 +16,13 @@ Given an undirected graph ![graph], find the maximum-cardinality subset ![subset
 
 ![Qmax_o], 
 
-where,  ![omega]
+where,
+<img src="https://latex.codecogs.com/gif.latex?\Omega=\left\{&space;Q\subset&space;V\mid\forall&space;u,v\in&space;Q,(u,v)\notin&space;E\right\}" title="\Omega=\left\{ Q\subset V\mid\forall u,v\in&space;Q,(u,v)\notin E\right\}" />
 
 [graph]: https://latex.codecogs.com/gif.latex?G=(V,E)
 [subset]: https://latex.codecogs.com/gif.latex?Q_{max}&space;\subseteq&space;V
 [Qmax]: https://latex.codecogs.com/gif.latex?Q_{max}
 [Qmax_o]: https://latex.codecogs.com/gif.latex?\left|Q_{max}\right|=max_{Q\in\Omega}|Q|
-[omega]: https://latex.codecogs.com/gif.latex?\Omega=\{Q\subset&space;V\mid\forall&space;u,v\in&space;Q,(u,v)\notin&space;E\}
 
 ## Example
 
@@ -30,7 +30,7 @@ where,  ![omega]
 
 Maximal independent set is:
 
-![Qmax_example](https://latex.codecogs.com/gif.latex?Q_{max}=\{2,5,8,9,11,12,18,20\})
+<img src="https://latex.codecogs.com/gif.latex?Q_{max}=\left\{2,5,8,9,11,12,18,20\left\}" title="Q_{max}=\left\{2,5,8,9,11,12,18,20\left\}" />
 
 # Algorithm
 
