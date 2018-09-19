@@ -30,7 +30,8 @@ before_script:
   - sudo env "PATH=$PATH" cmake --build .
 
 script:
-  - mkdir ./build
+  - cd $TRAVIS_BUILD_DIR/
+  - mkdir /build
   - cd ./build
   - cmake ..
   - cmake --build . --config $CONFIGURATION
