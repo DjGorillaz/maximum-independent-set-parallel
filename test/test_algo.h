@@ -1,4 +1,5 @@
 #include <thread>
+#include <variant>
 
 #include "gtest/gtest.h"
 
