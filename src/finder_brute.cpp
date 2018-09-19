@@ -5,7 +5,8 @@ namespace MaximumIndependentSet
     using namespace boost;
 
     FinderBrute::FinderBrute(const Graph& graph_, int nCpu_):
-        Finder(graph_, "Brute force algorithm", nCpu_)
+        Finder(graph_, "Brute force algorithm", nCpu_),
+        ind_set_count(nCpu_, {0,0})
     {
         nTasks = static_cast<std::uintmax_t>(pow(2, nVertices));
     }
@@ -40,7 +41,7 @@ namespace MaximumIndependentSet
                 if (subset[l] == false) continue;
 
                 //If edge is in the matrix => set is not independent
-                auto [some_edge, isEdgeExists] = edge(k, l, graphB);
+                auto [some_edge, isEdgeExists] = edge(k, l, get_graphB());
                 if (isEdgeExists == true)
                     return;
             }
@@ -60,8 +61,8 @@ namespace MaximumIndependentSet
     {
         //Find maximal indpendent set
         auto max = std::max_element(ind_set_count.begin(), ind_set_count.end(), 
-                                    [](const auto& v1, const auto& v2){ return v1.second.first < v2.second.first;});
-        index_max = max->second.second;
+                                    [](const auto& v1, const auto& v2){ return v1.first < v2.first;});
+        index_max = max->second;
 
         for (int j = 0; j < nVertices; ++j) 
         {

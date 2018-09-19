@@ -17,6 +17,6 @@ namespace MaximumIndependentSet
         void find_per_subset(std::vector<bool>& subset, std::uintmax_t nSubset, int thread_id);
         void calc_result() override;
 
-        std::map<boost::thread::id, std::pair<int, std::uintmax_t>> ind_set_count;
+        std::vector<std::pair<int, std::uintmax_t>> ind_set_count;
     };
 }
