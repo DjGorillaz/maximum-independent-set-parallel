@@ -10,7 +10,7 @@ namespace MaximumIndependentSet
         nTasks = static_cast<std::uintmax_t>(pow(2, nVertices));
     }
   
-    void FinderBrute::find_per_thread(std::uintmax_t first, std::uintmax_t last)
+    void FinderBrute::find_per_thread(std::uintmax_t first, std::uintmax_t last, int thread_id)
     {
         //The range of subsets is set for each CPU
         for(auto i = first; i <= last; ++i)
@@ -22,11 +22,11 @@ namespace MaximumIndependentSet
             {
                 subset[j] = (nSubset >> j) & 1;
             }
-            find_per_subset(subset, nSubset);
+            find_per_subset(subset, nSubset, thread_id);
         }
     }
 
-    void FinderBrute::find_per_subset(std::vector<bool>& subset, std::uintmax_t nSubset)
+    void FinderBrute::find_per_subset(std::vector<bool>& subset, std::uintmax_t nSubset, int thread_id)
     {
         int curr_set_size = 0;
 
@@ -48,7 +48,6 @@ namespace MaximumIndependentSet
         }
 
         //Update max_set_size for current thread
-        auto thread_id = boost::this_thread::get_id();
         auto& [max_set_size, nSubset_old] = ind_set_count[thread_id];
         if (curr_set_size > max_set_size) 
         {
