@@ -25,14 +25,17 @@ install:
   - cd /usr/src/gtest
   - sudo env "PATH=$PATH" cmake .
   - sudo env "PATH=$PATH" cmake --build .
-
+  - pwd
+  
 before_script:
   - export CXX="g++-8"
 
 script:
   - cd $TRAVIS_BUILD_DIR
-  - mkdir /build
-  - cd ./build
+  - pwd
+  - mkdir build
+  - cd build
+  - pwd
   - cmake ..
   - cmake --build . --config $CONFIGURATION
   - ctest -C $CONFIGURATION --output-on-failure
