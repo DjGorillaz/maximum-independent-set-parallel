@@ -12,6 +12,7 @@ namespace MaximumIndependentSet
     {
     public:
         Finder(const Graph& graph, const std::string& name, int nCpu = 1);
+        Finder(Finder&&) = default;
         virtual decltype(std::chrono::milliseconds().count()) get_time() const = 0;
         virtual std::vector<int> get_result() const = 0;
         virtual std::string get_name() const = 0;
