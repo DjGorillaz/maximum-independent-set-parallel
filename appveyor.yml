@@ -5,6 +5,7 @@ version: '1.0.{build}'
 #branches to build
 branches:
   only:
+    - master
     - develop
 
 #don't build on tags
