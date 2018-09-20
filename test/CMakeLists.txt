@@ -1,7 +1,5 @@
 find_package(GTest REQUIRED)
 
-include_directories(${CMAKE_SOURCE_DIR}/src)
-
 add_executable(test_algo test_algo.cpp)
 
 set_target_properties(test_algo PROPERTIES
