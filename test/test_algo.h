@@ -5,9 +5,18 @@
 
 #include "finder_greedy.h"
 #include "finder_brute.h"
+#include "visit_variant.h"
 
 namespace 
 {
+    namespace MIS = MaximumIndependentSet;
+    
+    using variant_array = std::array<
+                                     std::variant<
+                                                    MIS::FinderGreedy,
+                                                    MIS::FinderBrute>,
+                                     2>;
+
     class TestAlgo : public ::testing::Test
     {
     protected:
@@ -19,28 +28,19 @@ namespace
         unsigned int nCpu;
     };
 
-    namespace MIS = MaximumIndependentSet;
-
     TEST_F(TestAlgo, OneVertex)
     {
         float connectivity = 0.6f;
         MIS::Graph gm(1, connectivity);
 
-        std::array<std::variant<MIS::FinderGreedy,
-                                MIS::FinderBrute>,
-                                2>
-                    finders = {MIS::FinderGreedy(gm, nCpu),
-                               MIS::FinderBrute(gm, nCpu)};
+        variant_array finders = {MIS::FinderGreedy(gm, nCpu),
+                                 MIS::FinderBrute(gm, nCpu)};
 
-        for(auto& variant_finder: finders)
+        visit_variant(finders.begin(), finders.end(), [](auto& finder)
         {
-            std::visit(
-                [](auto& finder){
-                    finder.run();
-                    ASSERT_TRUE(finder.get_result().size() == 1);
-                },
-                variant_finder);
-        }
+            finder.run();
+            ASSERT_EQ(finder.get_result().size(), 1);
+        });
     }
 
     TEST_F(TestAlgo, CompareAlgo)
@@ -88,21 +88,14 @@ namespace
             float connectivity = 0.6f;
             MIS::Graph gm(15, connectivity);
 
-            std::array<std::variant<MIS::FinderGreedy,
-                                MIS::FinderBrute>,
-                                2>
-                    finders = {MIS::FinderGreedy(gm, nCpu),
-                               MIS::FinderBrute(gm, nCpu)};
+            variant_array finders = {MIS::FinderGreedy(gm, nCpu),
+                                     MIS::FinderBrute(gm, nCpu)};
 
-            for(auto& variant_finder: finders)
+            visit_variant(finders.begin(), finders.end(), [](auto& finder)
             {
-                std::visit(
-                    [](auto& finder){
-                        finder.run();
-                        ASSERT_GE(finder.get_result().size(), 1);
-                    },
-                    variant_finder);
-            }
+                finder.run();
+                ASSERT_GE(finder.get_result().size(), 1);
+            });
         }
     }
 
