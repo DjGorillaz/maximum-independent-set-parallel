@@ -4,6 +4,7 @@
 
 #include "finder_greedy.h"
 #include "finder_brute.h"
+#include "visit_variant.h"
 
 namespace MIS = MaximumIndependentSet;
 
@@ -37,25 +38,22 @@ int main()
                                 2>
                     finders = {MIS::FinderGreedy(gm, nCpu),
                                MIS::FinderBrute(gm, nCpu)};
-
-        for(auto& variant_finder: finders)
-        {
-            std::visit(
-                [](auto& finder){
-                    finder.run();
-                    std::cout << "\n" << finder.get_name() << "\n";
-                    std::cout << "Time: " << finder.get_time() << " ms\n";
-                    std::cout << "Result:\t(";
-                    std::string delimiter = "";
-                    for(const auto& vertex: finder.get_result())
-                    {
-                        std::cout << delimiter << vertex;
-                        delimiter = ", ";
-                    }
-                    std::cout << ")\n";
-                },
-                variant_finder);
-        }
+        
+        visit_variant(finders.begin(), finders.end(), [](auto& finder) 
+        { 
+            finder.run();
+            std::cout << "\n" << finder.get_name() << "\n"
+                      << "Time: " << finder.get_time() << " ms\n"
+                      << "Result:\t(";
+                      
+            std::string delimiter = "";
+            for(const auto& vertex: finder.get_result())
+            {
+                std::cout << delimiter << vertex;
+                delimiter = ", ";
+            }
+            std::cout << ")\n";
+        });
     }
     catch(std::exception& ex)
     {
